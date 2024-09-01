@@ -39,8 +39,8 @@ class Shader {
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
         } catch (std::ifstream::failure& e) {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: "
-                      << e.what() << std::endl;
+            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what()
+                      << std::endl;
         }
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
@@ -69,15 +69,7 @@ class Shader {
     }
     // activate the shader
     // ------------------------------------------------------------------------
-    void use() { 
-        glUseProgram(ID);
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        int vertexColorLocation =
-            glGetUniformLocation(ID, "color");
-        glUseProgram(ID);
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-    }
+    void use() { glUseProgram(ID); }
     // utility uniform functions
     // ------------------------------------------------------------------------
     void setBool(const std::string& name, bool value) const {
@@ -102,24 +94,21 @@ class Shader {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success) {
                 glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-                std::cout
-                    << "ERROR::SHADER_COMPILATION_ERROR of type: " << type
-                    << "\n"
-                    << infoLog
-                    << "\n -- "
-                       "--------------------------------------------------- -- "
-                    << std::endl;
+                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
+                          << infoLog
+                          << "\n -- "
+                             "--------------------------------------------------- -- "
+                          << std::endl;
             }
         } else {
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
             if (!success) {
                 glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-                std::cout
-                    << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"
-                    << infoLog
-                    << "\n -- "
-                       "--------------------------------------------------- -- "
-                    << std::endl;
+                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"
+                          << infoLog
+                          << "\n -- "
+                             "--------------------------------------------------- -- "
+                          << std::endl;
             }
         }
     }

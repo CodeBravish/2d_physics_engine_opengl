@@ -7,8 +7,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Renderer/Shader.h"
-
 using namespace std;
 using namespace glm;
 
@@ -25,12 +23,13 @@ class Ball {
 
     vec4 color;
 
-    Ball(vec2 position, float radius, float mass, Shader &shader);
+    Ball();
+    Ball(vec2 position, float radius, float mass, GLuint shader_ID);
 
     void render();
 
    private:
-    Shader shader;
+    GLuint shader_ID;
     GLuint VAO;
     GLuint segments = 20;
 

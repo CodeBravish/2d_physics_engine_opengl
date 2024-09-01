@@ -9,6 +9,7 @@
 
 #include "Renderer/Shader.h"
 #include "Objects/Ball.h"
+#include "Objects/Ball_Simulator.h"
 
 using namespace std;
 using namespace glm;
@@ -39,7 +40,7 @@ int main() {
     //
 
     // Shader Constructor
-    Shader BallShader("../Shaders/default.vert", "../Shaders/default.frag");
+    Shader BallShader("../assets/shaders/default.vert", "../assets/shaders/default.frag");
 
     // Vertex Data
     vector<float> vertices;
@@ -85,8 +86,11 @@ int main() {
     float accumulator = 0.0f;
     float fixed_time_step = 1.0f / 60.0f;
 
-    Ball ball(position, 0.1, 1.0, BallShader);
-    Ball ball2(vec2(1.0f, 1.0f), 0.1, 1.0, BallShader);
+    Ball balls[2];
+
+    for (size_t i = 0; i < 2; i++) {
+        balls[i] = Ball(vec2(5.0f / 3 * (i + 1), 2.5), 0.5, 1.0, BallShader.ID);
+    }
 
     while (!glfwWindowShouldClose(window)) {
         float curr_time = static_cast<float>(glfwGetTime());
@@ -96,12 +100,8 @@ int main() {
         accumulator += delta_time;
 
         while (accumulator >= fixed_time_step) {
-            ball.velocity.y += 9.8 * fixed_time_step;
-            ball.position += ball.velocity * fixed_time_step;
-            cout << ball.velocity.x << ", " << ball.velocity.y << endl;
-
-            handleCollisions();
-
+            simulateBalls(balls, 2, fixed_time_step);
+            handleBallCollisions(balls, 2, width, height);
             accumulator -= fixed_time_step;
         }
 
@@ -122,8 +122,7 @@ int main() {
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(view));
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(projection));
 
-        ball.render();
-        ball2.render();
+        renderBalls(balls, 2);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

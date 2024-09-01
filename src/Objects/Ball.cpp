@@ -2,8 +2,10 @@
 
 #include <vector>
 
-Ball::Ball(vec2 position, float radius, float mass, Shader &shader)
-    : position(position), radius(radius), mass(mass), shader(shader) {
+Ball::Ball() : position(vec2(0)), radius(1.0f), mass(1.0f), shader_ID(0) {}
+
+Ball::Ball(vec2 position, float radius, float mass, GLuint shader_ID)
+    : position(position), radius(radius), mass(mass), shader_ID(shader_ID) {
     this->velocity = vec2(0.0f);
     this->resCoeff = 0.9f;
     this->color = vec4(1.0f);
@@ -14,14 +16,14 @@ Ball::Ball(vec2 position, float radius, float mass, Shader &shader)
 }
 
 void Ball::render() {
-    this->shader.use();
+    glUseProgram(this->shader_ID);
 
     mat4 model = mat4(1.0f);
 
     model = translate(model, vec3(this->position, 1.0f));
     model = scale(model, vec3(vec2(this->radius), 1.0f));
 
-    unsigned int modelLoc = glGetUniformLocation(this->shader.ID, "model");
+    unsigned int modelLoc = glGetUniformLocation(this->shader_ID, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
 
     glBindVertexArray(this->VAO);

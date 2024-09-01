@@ -11,9 +11,10 @@ find_package(glfw3 REQUIRED)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(SOURCES
-    main.cpp
-    glad.c
-    Objects/Ball.cpp
+    src/main.cpp
+    src/glad.c
+    src/Objects/Ball.cpp
+    src/Objects/Ball_Simulator.cpp
 )
 
 add_executable(2d_engine ${SOURCES})
