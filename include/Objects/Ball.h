@@ -14,7 +14,6 @@ using namespace std;
 using namespace glm;
 
 extern const float PI;
-extern Shader BallShader;
 
 class Ball {
    public:
@@ -23,13 +22,32 @@ class Ball {
     float mass;
 
     vec2 velocity = vec2(0.0f);
+    float resCoeff = 0.9f;
 
     vec4 color = vec4(1.0f);
 
-    Ball(vec2 position, float radius, float mass)
-        : position(position), radius(radius), mass(mass) {}
+    Ball(vec2 position, float radius, float mass, Shader &shader)
+        : position(position), radius(radius), mass(mass), shader(shader) {
+        initVertexData();
+    }
+
+    void render() {
+        this->shader.use();
+
+        mat4 model = mat4(1.0f);
+
+        model = translate(model, vec3(this->position, 1.0f));
+        model = scale(model, vec3(vec2(this->radius), 1.0f));
+
+        unsigned int modelLoc = glGetUniformLocation(this->shader.ID, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
+
+        glBindVertexArray(this->VAO);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, this->segments + 2);
+    }
 
    private:
+    Shader shader;
     GLuint VAO;
     GLuint segments = 20;
 
@@ -40,11 +58,10 @@ class Ball {
         vertices.push_back(0.0f);
         vertices.push_back(0.0f);
 
-
         for (int i = 0; i <= segments; i++) {
             GLfloat angle = 2 * PI * i / segments;
-            GLfloat x = 0.5f * cos(angle);
-            GLfloat y = 0.5f * sin(angle);
+            GLfloat x = 1.0f * cos(angle);
+            GLfloat y = 1.0f * sin(angle);
             vertices.push_back(x);
             vertices.push_back(y);
         }
@@ -62,21 +79,6 @@ class Ball {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-    }
-
-    void render() {
-        BallShader.use();
-
-        mat4 model = mat4(1.0f);
-
-        model = translate(model, vec3(this->position, 1.0f));
-        model = scale(model, vec3(vec2(this->radius), 1.0f));
-
-        unsigned int modelLoc = glGetUniformLocation(BallShader.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
-
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, this->segments + 2);
     }
 };
 

@@ -21,7 +21,7 @@ const float PI = pi<float>();
 
 float scaleFactor = 10.0f;
 float resCoeff = 0.9f;
-float radius = 0.1;
+float radius = 0.01;
 vec2 velocity = vec2(5.0f, 5.0f);
 vec2 position = vec2(2.5f, 0.0f);
 
@@ -31,8 +31,6 @@ void processInput(GLFWwindow *window);
 void handleCollisions();
 vec4 rgba(uint red, uint green, uint blue, uint alpha);
 
-Shader BallShader("../Shaders/default.vert", "../Shaders/default.frag");
-
 int main() {
     // Setup GLFW
     GLFWwindow *window = glSetup();
@@ -41,6 +39,7 @@ int main() {
     //
 
     // Shader Constructor
+    Shader BallShader("../Shaders/default.vert", "../Shaders/default.frag");
 
     // Vertex Data
     vector<float> vertices;
@@ -86,6 +85,9 @@ int main() {
     float accumulator = 0.0f;
     float fixed_time_step = 1.0f / 60.0f;
 
+    Ball ball(position, 0.1, 1.0, BallShader);
+    Ball ball2(vec2(1.0f, 1.0f), 0.1, 1.0, BallShader);
+
     while (!glfwWindowShouldClose(window)) {
         float curr_time = static_cast<float>(glfwGetTime());
         float delta_time = curr_time - prev_time;
@@ -94,9 +96,9 @@ int main() {
         accumulator += delta_time;
 
         while (accumulator >= fixed_time_step) {
-            velocity.y += 9.8 * fixed_time_step;
-            position += velocity * fixed_time_step;
-            cout << velocity.x << ", " << velocity.y << endl;
+            ball.velocity.y += 9.8 * fixed_time_step;
+            ball.position += ball.velocity * fixed_time_step;
+            cout << ball.velocity.x << ", " << ball.velocity.y << endl;
 
             handleCollisions();
 
@@ -113,21 +115,15 @@ int main() {
         // Activate Shader
         BallShader.use();
 
-        mat4 model = mat4(1.0f);
         mat4 view = mat4(1.0f);
 
-        model = translate(model, vec3(position, 1.0f));
-        model = scale(model, vec3(vec2(scaleFactor), 1.0f));
-
-        unsigned int modelLoc = glGetUniformLocation(BallShader.ID, "model");
         unsigned int viewLoc = glGetUniformLocation(BallShader.ID, "view");
         unsigned int projectionLoc = glGetUniformLocation(BallShader.ID, "projection");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(view));
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(projection));
 
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, segments + 2);
+        ball.render();
+        ball2.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -135,6 +131,7 @@ int main() {
 
     glfwTerminate();
 }
+
 void handleCollisions() {
     if (abs(position.y) + radius >= height) {
         position.y = height - radius;
