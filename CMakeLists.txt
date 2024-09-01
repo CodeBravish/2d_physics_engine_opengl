@@ -13,6 +13,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(SOURCES
     main.cpp
     glad.c
+    Objects/Ball.cpp
 )
 
 add_executable(2d_engine ${SOURCES})
