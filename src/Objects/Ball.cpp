@@ -7,7 +7,7 @@ Ball::Ball() : position(vec2(0)), radius(1.0f), mass(1.0f), shader_ID(0) {}
 Ball::Ball(vec2 position, float radius, float mass, GLuint shader_ID)
     : position(position), radius(radius), mass(mass), shader_ID(shader_ID) {
     this->velocity = vec2(0.0f);
-    this->resCoeff = 0.9f;
+    this->resCoeff = 1.0f;
     this->color = vec4(1.0f);
 
     this->segments = 20;
@@ -16,7 +16,7 @@ Ball::Ball(vec2 position, float radius, float mass, GLuint shader_ID)
 }
 
 void Ball::render() {
-    glUseProgram(this->shader_ID);
+    // glUseProgram(this->shader_ID);
 
     mat4 model = mat4(1.0f);
 
